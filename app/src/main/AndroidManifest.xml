@@ -20,6 +20,9 @@
 
         </activity>
         <activity android:name=".view.FacebookLoginActivity">
+
+        </activity>
+        <activity android:name=".view.FirebaseLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
