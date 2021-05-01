@@ -2,8 +2,8 @@ package com.example.movies.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.movies.modelMovies.Movie
-import com.example.movies.modelMovies.UpcomingMoviesPage
+import com.example.movies.model.Movie
+import com.example.movies.model.UpcomingMoviesPage
 import com.example.movies.repository.RepositoryMovies
 import com.example.movies.repository.SingletonConfiguration
 import kotlinx.coroutines.CoroutineScope

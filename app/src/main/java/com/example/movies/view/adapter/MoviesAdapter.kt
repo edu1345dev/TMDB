@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movies.R
-import com.example.movies.modelMovies.Movie
+import com.example.movies.model.Movie
 import com.example.movies.repository.SingletonConfiguration
 import com.squareup.picasso.Picasso
 

@@ -54,6 +54,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/bt_login" />
 
+    <Button
+        android:id="@+id/bt_add_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add User to Database"
+        android:onClick="addUser"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bt_logout"/>
+
     <TextView
         android:id="@+id/emailTv"
         android:layout_width="wrap_content"
@@ -61,5 +71,5 @@
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bt_logout" />
+        app:layout_constraintTop_toBottomOf="@id/bt_add_user" />
 </androidx.constraintlayout.widget.ConstraintLayout>

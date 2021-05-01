@@ -1,6 +1,6 @@
 package com.example.movies.repository
 
-import com.example.movies.modelMovies.MovieConfiguration
+import com.example.movies.model.MovieConfiguration
 
 object SingletonConfiguration {
     var config: MovieConfiguration? = null

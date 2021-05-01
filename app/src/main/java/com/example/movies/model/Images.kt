@@ -1,4 +1,4 @@
-package com.example.movies.modelMovies
+package com.example.movies.model
 
 data class Images(
     val backdrop_sizes: List<String>? = listOf(),

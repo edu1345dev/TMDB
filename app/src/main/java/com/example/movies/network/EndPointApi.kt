@@ -1,7 +1,7 @@
 package com.example.movies.network
 
-import com.example.movies.modelMovies.MovieConfiguration
-import com.example.movies.modelMovies.UpcomingMoviesPage
+import com.example.movies.model.MovieConfiguration
+import com.example.movies.model.UpcomingMoviesPage
 import retrofit2.http.GET
 import retrofit2.http.Query
 

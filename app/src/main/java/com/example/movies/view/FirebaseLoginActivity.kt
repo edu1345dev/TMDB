@@ -4,11 +4,17 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.movies.R
+import com.example.movies.model.FavoriteMovie
+import com.example.movies.model.Subject
+import com.example.movies.model.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 class FirebaseLoginActivity : AppCompatActivity() {
+    private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var firebaseAuth: FirebaseAuth
 
     private val emailTv by lazy { findViewById<TextView>(R.id.emailTv) }
@@ -20,6 +26,7 @@ class FirebaseLoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_firebase_login)
 
         firebaseAuth = FirebaseAuth.getInstance()
+        firebaseDatabase = FirebaseDatabase.getInstance()
     }
 
     override fun onStart() {
@@ -71,5 +78,54 @@ class FirebaseLoginActivity : AppCompatActivity() {
     fun signout(view: View) {
         firebaseAuth.signOut()
         setUserEmail("Usuário desconectado")
+    }
+
+    fun addUser(view: View) {
+        firebaseAuth.currentUser?.let { user ->
+            val subject = Subject("Firebase Database")
+            val userDb = User(
+                user.email ?: "",
+                "Jose Santos",
+                subject,
+                FavoriteMovie(listOf("Interestelar", "Run"))
+            )
+
+            val reference = firebaseDatabase.getReference("users")
+
+            reference.child(user.uid).setValue(userDb)
+            reference.child(user.uid).child("favorite_movies")
+                .setValue(FavoriteMovie(listOf("Interestelar", "Run")))
+
+            reference.child(user.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    handleUser(snapshot)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    error
+                }
+            })
+        }
+    }
+
+    private fun handleUser(snapshot: DataSnapshot) {
+        val user = snapshot.getValue(User::class.java)
+        user.toString()
+    }
+
+    fun handleUserData(snapshot: DataSnapshot) {
+        firebaseAuth.currentUser?.let {
+            val uid = it.uid
+            val data: HashMap<String, String> = snapshot.value as HashMap<String, String>
+            val user: HashMap<String, String> = data[uid] as HashMap<String, String>
+            val email = user["email"] ?: ""
+            val name = user["name"] ?: ""
+            val subject = (user["subject"] as HashMap<String, String>)["type"] ?: ""
+
+            val userMapped =
+                User(email = email, name = name, subject = Subject((subject)), movies = null)
+
+            Toast.makeText(this, userMapped.toString(), Toast.LENGTH_LONG).show()
+        }
     }
 }
