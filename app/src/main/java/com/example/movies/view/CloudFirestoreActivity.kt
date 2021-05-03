@@ -11,13 +11,12 @@ import com.example.movies.model.FavoriteMovie
 import com.example.movies.model.Subject
 import com.example.movies.model.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class FirebaseLoginActivity : AppCompatActivity() {
-    private lateinit var firebaseDatabase: FirebaseDatabase
+class CloudFirestoreActivity : AppCompatActivity() {
+    private var firestoreDb = Firebase.firestore
     private lateinit var firebaseAuth: FirebaseAuth
 
     private val emailTv by lazy { findViewById<TextView>(R.id.emailTv) }
@@ -26,10 +25,9 @@ class FirebaseLoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_firebase_login)
+        setContentView(R.layout.activity_firestore_login)
 
-        firebaseAuth = Firebase.auth
-        firebaseDatabase = Firebase.database
+        firebaseAuth = FirebaseAuth.getInstance()
     }
 
     override fun onStart() {
@@ -93,44 +91,40 @@ class FirebaseLoginActivity : AppCompatActivity() {
                 FavoriteMovie(listOf("Interestelar", "Run"))
             )
 
-            val reference = firebaseDatabase.getReference("users")
-
-            reference
-                .child(user.uid)
-                .setValue(userDb)
-            reference.child(user.uid).child("favorite_movies")
-                .setValue(FavoriteMovie(listOf("Interestelar", "Run")))
-
-            reference.child(user.uid).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    handleUser(snapshot)
+            firestoreDb.collection("users")
+                .document(user.uid)
+                .set(userDb)
+                .addOnSuccessListener {
+                    it
+                }.addOnFailureListener {
+                    it
                 }
-
-                override fun onCancelled(error: DatabaseError) {
-                    error
-                }
-            })
         }
     }
 
-    private fun handleUser(snapshot: DataSnapshot) {
-        val user = snapshot.getValue(User::class.java)
-        user.toString()
-    }
-
-    fun handleUserData(snapshot: DataSnapshot) {
-        firebaseAuth.currentUser?.let {
-            val uid = it.uid
-            val data: HashMap<String, String> = snapshot.value as HashMap<String, String>
-            val user: HashMap<String, String> = data[uid] as HashMap<String, String>
-            val email = user["email"] ?: ""
-            val name = user["name"] ?: ""
-            val subject = (user["subject"] as HashMap<String, String>)["type"] ?: ""
-
-            val userMapped =
-                User(email = email, name = name, subject = Subject((subject)), movies = null)
-
-            Toast.makeText(this, userMapped.toString(), Toast.LENGTH_LONG).show()
+    fun getuser(view: View) {
+        firebaseAuth.currentUser?.let { user ->
+            firestoreDb.collection("users")
+                .document(user.uid)
+                .get()
+                .addOnSuccessListener {
+                    val user = it.toObject(User::class.java)
+                    user.toString()
+                }.addOnFailureListener {
+                    it
+                }
         }
+
+//        firebaseAuth.currentUser?.let { user ->
+//            firestoreDb.collection("users")
+//                .limit(2)
+//                .orderBy("email")
+//                .get()
+//                .addOnSuccessListener {
+//                    it.documents[0].toObject(User::class.java)
+//                }.addOnFailureListener {
+//                    it
+//                }
+//        }
     }
 }

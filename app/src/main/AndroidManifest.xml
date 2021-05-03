@@ -23,6 +23,8 @@
 
         </activity>
         <activity android:name=".view.FirebaseLoginActivity">
+        </activity>
+        <activity android:name=".view.CloudFirestoreActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
