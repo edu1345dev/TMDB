@@ -1,5 +1,6 @@
 package com.example.movies.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -15,6 +16,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 
 class FirebaseLoginActivity : AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
@@ -30,6 +32,10 @@ class FirebaseLoginActivity : AppCompatActivity() {
 
         firebaseAuth = Firebase.auth
         firebaseDatabase = Firebase.database
+        if (firebaseAuth.currentUser != null){
+            startActivity(Intent(this, FirebaseStorageActivity::class.java))
+            finish()
+        }
     }
 
     override fun onStart() {
@@ -68,6 +74,7 @@ class FirebaseLoginActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 val user = firebaseAuth.currentUser
                 setUserEmail(user?.email ?: "Usuário desconectado")
+                startActivity(Intent(this, FirebaseStorageActivity::class.java))
             } else {
                 setUserEmail(task.exception?.message!!)
             }
