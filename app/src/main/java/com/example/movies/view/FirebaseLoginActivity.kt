@@ -2,6 +2,7 @@ package com.example.movies.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -16,11 +17,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import com.google.firebase.storage.FirebaseStorage
 
 class FirebaseLoginActivity : AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var firebaseAuth: FirebaseAuth
+    private val firebasePush = Firebase.messaging
 
     private val emailTv by lazy { findViewById<TextView>(R.id.emailTv) }
     private val emailEt by lazy { findViewById<EditText>(R.id.email) }
@@ -35,6 +38,12 @@ class FirebaseLoginActivity : AppCompatActivity() {
         if (firebaseAuth.currentUser != null){
             startActivity(Intent(this, FirebaseStorageActivity::class.java))
             finish()
+        }
+
+        firebasePush.token.addOnCompleteListener {
+            if (it.isSuccessful){
+                Log.d("FirebasePushToken", it.result)
+            }
         }
     }
 
