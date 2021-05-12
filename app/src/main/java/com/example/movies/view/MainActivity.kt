@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel by lazy { ViewModelProviders.of(this).get(MainViewModel::class.java) }
     private val nextPageLoading by lazy { findViewById<ProgressBar>(R.id.nextLoading) }
     private val firstPageLoading by lazy { findViewById<ProgressBar>(R.id.firstLoading) }
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    private val firebaseAnalytics = Firebase.analytics
 
     private val recyclerScrollListener by lazy {
         RecyclerScrollListener {
@@ -44,12 +44,10 @@ class MainActivity : AppCompatActivity() {
         recycler.layoutManager = layoutManager
 
         recycler.addOnScrollListener(recyclerScrollListener)
-        firebaseAnalytics = Firebase.analytics
 
         viewModel.moviesList.observe(this) {movies ->
             enableRecyclerScrollPaging()
             adapter.addMovies(movies)
-            firebaseAnalytics.setUserProperty("movies", "movie")
 
             val params = Bundle().apply {
                 putString("movie_name", movies[0].title)

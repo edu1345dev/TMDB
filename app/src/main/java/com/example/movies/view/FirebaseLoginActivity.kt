@@ -12,6 +12,7 @@ import com.example.movies.R
 import com.example.movies.model.FavoriteMovie
 import com.example.movies.model.Subject
 import com.example.movies.model.User
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -24,6 +25,7 @@ class FirebaseLoginActivity : AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var firebaseAuth: FirebaseAuth
     private val firebasePush = Firebase.messaging
+    private val firebaseAnalytics = Firebase.analytics
 
     private val emailTv by lazy { findViewById<TextView>(R.id.emailTv) }
     private val emailEt by lazy { findViewById<EditText>(R.id.email) }
@@ -35,13 +37,9 @@ class FirebaseLoginActivity : AppCompatActivity() {
 
         firebaseAuth = Firebase.auth
         firebaseDatabase = Firebase.database
-        if (firebaseAuth.currentUser != null){
-            startActivity(Intent(this, FirebaseStorageActivity::class.java))
-            finish()
-        }
 
         firebasePush.token.addOnCompleteListener {
-            if (it.isSuccessful){
+            if (it.isSuccessful) {
                 Log.d("FirebasePushToken", it.result)
             }
         }
@@ -61,10 +59,18 @@ class FirebaseLoginActivity : AppCompatActivity() {
     }
 
     fun signin(view: View) {
-        val email = emailEt.text.toString()
-        val pass = passEt.text.toString()
+        if (firebaseAuth.currentUser != null){
+            val bundle = Bundle().apply {
+                putString("email", firebaseAuth.currentUser!!.email)
+            }
+            firebaseAnalytics.logEvent("login", bundle)
+            startActivity(Intent(this, MainActivity::class.java))
+        } else{
+            val email = emailEt.text.toString()
+            val pass = passEt.text.toString()
 
-        firebaseAuthWithEmailPass(email, pass)
+            firebaseAuthWithEmailPass(email, pass)
+        }
     }
 
     private fun createUserWithEmailPass(email: String, pass: String) {
@@ -83,7 +89,7 @@ class FirebaseLoginActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 val user = firebaseAuth.currentUser
                 setUserEmail(user?.email ?: "Usuário desconectado")
-                startActivity(Intent(this, FirebaseStorageActivity::class.java))
+                startActivity(Intent(this, MainActivity::class.java))
             } else {
                 setUserEmail(task.exception?.message!!)
             }
@@ -95,8 +101,10 @@ class FirebaseLoginActivity : AppCompatActivity() {
     }
 
     fun signout(view: View) {
-        firebaseAuth.signOut()
-        setUserEmail("Usuário desconectado")
+        throw RuntimeException("Test Crash")
+
+//        firebaseAuth.signOut()
+//        setUserEmail("Usuário desconectado")
     }
 
     fun addUser(view: View) {
